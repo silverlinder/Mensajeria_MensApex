@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="01-create-schema" author="ntt-data">
+        <sqlFile path="01_create_schema.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="02-grant-connect" author="ntt-data">
+        <sqlFile path="02_grant_connect.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="03-create-table-entidad" author="ntt-data">
+        <sqlFile path="03_create_table_entidad.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="04-grant-permissions-table-entidad" author="ntt-data">
+        <sqlFile path="04_grant_permissions_table_entidad.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+    <changeSet id="05-populate-table-entidad" author="ntt-data">
+        <sqlFile path="05_populate-table-entidad.sql" relativeToChangelogFile="true"/>
+    </changeSet>
+
+</databaseChangeLog>

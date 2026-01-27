@@ -1,0 +1,55 @@
+services:
+  oracle-xe-soda:
+    image: azudirayacont02.azurecr.io/stack/oracle-xe-soda:1.0.0
+    container_name: oracle-xe-microbase
+    ports: [ "1521:1521","5500:5500" ]
+    volumes:
+      - oracle-xe-soda-data:/opt/oracle/oradata
+    healthcheck:
+      test: [ "CMD-SHELL", "echo 'select 1 from dual;' | sqlplus -s / as sysdba | grep -q 1" ]
+      interval: 15s
+      timeout: 10s
+      retries: 40
+    restart: unless-stopped
+
+  liquibase-microbase:
+    build:
+      context: .
+      dockerfile: Dockerfile.liquibase
+    volumes:
+      - ./liquibase/changelog:/liquibase/changelog:ro
+      - ./liquibase/liquibase.properties:/liquibase/liquibase.properties:ro
+    depends_on:
+      oracle-xe-soda:
+        condition: service_healthy
+    entrypoint: [ "liquibase" ]
+    command: [ "--defaultsFile=/liquibase/liquibase.properties", "update" ]
+    restart: "no"
+
+
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3
+    container_name: keycloak-microbase
+    command: [ "start-dev","--http-port=8080","--import-realm" ]
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY: edge
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./keycloak/realms:/opt/keycloak/data/import:ro
+    depends_on:
+      oracle-xe-soda:
+        condition: service_healthy
+      # Si tu microservicio depende de objetos creados por Liquibase,
+      # haz depender también de liquibase:
+      # liquibase:
+      #   condition: service_completed_successfully
+    restart: unless-stopped
+
+volumes:
+  oracle-xe-soda-data:

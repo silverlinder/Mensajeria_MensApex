@@ -1,0 +1,18 @@
+<server>
+    <!-- Oracle driver -->
+    <jdbcDriver id="oracle8-driver" libraryRef="oracle8-library"/>
+    <!-- Oracle driver library -->
+    <library id="jdbcLib">
+        <fileset dir="${shared.resource.dir}/" includes="*.jar" />
+    </library>
+
+    <dataSource id="oracle" jndiName="jdbc/dataSource" queryTimeout="20s" transactional="true">
+        <jdbcDriver libraryRef="jdbcLib"/>
+        <properties.oracle
+                URL="${DB_URL}"
+                user="${DB_USER}"
+                password="${DB_PASSWORD}"/>
+        <onConnect>ALTER SESSION SET CURRENT_SCHEMA=${DB_DEFAULT_SCHEMA}</onConnect>
+    </dataSource>
+
+</server>

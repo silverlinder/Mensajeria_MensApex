@@ -1,0 +1,33 @@
+<server description="Microservicio Base">
+
+    <featureManager>
+        <feature>microProfile-6.1</feature>
+        <feature>jakartaee-10.0</feature>
+        <feature>mpOpenAPI-3.1</feature>
+        <feature>jdbc-4.3</feature>
+        <feature>jndi-1.0</feature>
+        <feature>persistence-3.1</feature>
+        <feature>mpJwt-2.1</feature>
+    </featureManager>
+
+    <httpEndpoint id="defaultHttpEndpoint"
+                  httpPort="9080"
+                  httpsPort="9443"/>
+
+    <webApplication location="boot.war"
+                    contextRoot="/"/>
+
+    <include location="persistence-config-oracle.xml"/>
+
+    <!-- Log format -->
+    <httpAccessLogging id="accessLogging" logFormat='%m %C %h %u %{t}W "%r" %s %b %D %{R}W'/>
+
+    <logging
+            traceSpecification="com.ibm.ws.jndi.*=all:org.eclipse.microprofile.*=all:jakarta.persistence.*=all:org.eclipse.persistence.*=all"/>
+
+    <keyStore id="defaultKeyStore" password="changeit"/>
+
+    <mpJwt id="kcmpjwt" issuer="http://localhost:8081/realms/dev"
+           jwksUri="http://localhost:8081/realms/dev/protocol/openid-connect/certs"
+           userNameAttribute="authorizationUsername"/>
+</server>
