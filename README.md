@@ -44,11 +44,11 @@
 
 |                **Ruta Artefactos**                 | **Tipo**  | 
 |:--------------------------------------------------:|:---------:|
-|       ```\application\target\application-0.1.0-SNAPSHOT.jar```        | ```jar``` |
-|     ```\boot\target\boot-0.1.0-SNAPSHOT.jar```     | ```war``` |
-|   ```\domain\target\domain-0.1.0-SNAPSHOT.jar```   | ```jar``` |
-| ```\database\target\database-0.1.0-SNAPSHOT.jar``` | ```jar``` |
-|     ```\rest\target\rest-0.1.0-SNAPSHOT.jar```     | ```jar``` |
+|       ```\application\target\application-0.0.0.1.jar```        | ```jar``` |
+|     ```\boot\target\boot-0.0.0.1.jar```     | ```war``` |
+|   ```\domain\target\domain-0.0.0.1.jar```   | ```jar``` |
+| ```\database\target\database-0.0.0.1.jar``` | ```jar``` |
+|     ```\rest\target\rest-0.0.0.1.jar```     | ```jar``` |
 
 ##### 3. Dependencias de Artefactos SAS
 [⇑Indice⇑](#indice)
