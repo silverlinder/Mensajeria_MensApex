@@ -5,7 +5,7 @@
     <parent>
         <groupId>es.ja.csaludad.sas.mensapex</groupId>
         <artifactId>ingestadedocumentos</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.0.0.1</version>
     </parent>
 
     <artifactId>rest</artifactId>
@@ -55,6 +55,16 @@
             <groupId>es.ja.csalud.sas.arquitectura-framework</groupId>
             <artifactId>arquitectura-framework-kernel</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <!--    FHIR    -->
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-r4</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-base</artifactId>
         </dependency>
 
     </dependencies>
