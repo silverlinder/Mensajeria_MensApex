@@ -17,7 +17,7 @@ public class ValidationService {
 
     public void validateOrThrow(DocumentPayloadDTO payload) {
         DocumentValidator validator = factory.getValidator(payload.getDocumentType());
-        ValidationResult result = validator.validate(payload);
+        ValidationResult result = validator.validate(payload); //SERGIO le aplicamos las reglas del validador
 
         if (!result.isValid()) {
             // Lanzamos BadRequest con el detalle para que lo transforme el ExceptionMapper

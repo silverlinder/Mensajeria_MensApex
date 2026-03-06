@@ -13,14 +13,15 @@ import java.util.Map;
 public class DocumentValidatorFactory {
 
     private final Map<String, DocumentValidator> byType = new HashMap<>();
-
+    //SERGIO inyecta los BEANS implementados de la (I) DocumentValidator -> array de validadores
     @Inject
     public DocumentValidatorFactory(Instance<DocumentValidator> validators) {
         for (DocumentValidator v : validators) {
             byType.put(normalize(v.supportsType()), v);
+            //SERGIO guarda todos los type creados de las clases que hayan implementado la (I)
         }
     }
-
+    //SERGIO recibe type -> NuevoDocumento
     public DocumentValidator getValidator(String documentType) {
         if (documentType == null || documentType.trim().isEmpty()) {
             throw new UnknownDocumentTypeException("documentType es obligatorio");
@@ -30,7 +31,7 @@ public class DocumentValidatorFactory {
         if (v == null) {
             throw new UnknownDocumentTypeException("Tipo de documento no soportado: " + documentType);
         }
-        return v;
+        return v; //SERGIO devuelve el validador
     }
 
     private String normalize(String s) {
