@@ -11,11 +11,15 @@
     <artifactId>rest</artifactId>
 
     <dependencies>
+        <!-- Libreria mensapex -->
+        <dependency>
+            <groupId>es.ja.csaludad.sas.mensapex</groupId>
+            <artifactId>componentescomunes-all</artifactId>
+        </dependency>
         <!-- MicroProfile API -->
         <dependency>
             <groupId>org.eclipse.microprofile</groupId>
             <artifactId>microprofile</artifactId>
-            <version>${microprofile.version}</version>
             <type>pom</type>
             <scope>provided</scope>
         </dependency>

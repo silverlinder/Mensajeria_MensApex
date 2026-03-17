@@ -33,6 +33,12 @@
     </properties>
     <dependencyManagement>
         <dependencies>
+            <!-- Librería mensapex -->
+            <dependency>
+                <groupId>es.ja.csaludad.sas.mensapex</groupId>
+                <artifactId>componentescomunes-all</artifactId>
+                <version>${version.mensapex-lib}</version>
+            </dependency>
             <!-- Jakarta EE API -->
             <dependency>
                 <groupId>jakarta.platform</groupId>
@@ -133,11 +139,6 @@
                 <groupId>ca.uhn.hapi.fhir</groupId>
                 <artifactId>hapi-fhir-base</artifactId>
                 <version>${version.fhir}</version>
-            </dependency>
-            <dependency>
-                <groupId>es.ja.csaludad.sas.mensapex</groupId>
-                <artifactId>componentescomunes</artifactId>
-                <version>${version.mensapex-lib}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
