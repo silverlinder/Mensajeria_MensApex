@@ -2,6 +2,7 @@ package es.ja.csaludad.sas.mensapex.rest.interceptor;
 
 import es.ja.csaludad.sas.mensapex.adapter.maco.internal.TicketMacoValidator;
 import es.ja.csaludad.sas.mensapex.rest.factory.OperationOutcomeFactory;
+import es.ja.csaludad.sas.mensapex.rest.interceptor.enums.TicketMacoErrorConstants;
 import jakarta.annotation.Priority;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -16,6 +17,7 @@ import org.hl7.fhir.r4.model.OperationOutcome;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 @Provider
 @PreMatching
@@ -25,18 +27,21 @@ public class TracingRequestFilter implements ContainerRequestFilter {
     public static final String MACO_HEADER = "maco";
     public static final String VERSION_SOPORTADA = "v1.0";
     public static final String VERSION_HEADER = "version";
+    public static final String HTTP_MACO = "http.maco";
+    public static final String HTTP_VERSION = "http.version";
+    //agrupo errores
+    private static final Set<String> FORBIDDEN_ERRORS =
+            Set.of(TicketMacoErrorConstants.EXPIRED_TICKET,
+                    TicketMacoErrorConstants.PERMISSION_TICKET); //agrupa errores
 
-    //futuros enum
-    public static final String MALFORMED_TICKET = "Ticket malformed";
-    public static final String EXPIRED_TICKET = "Ticket expired";
-    public static final String FUTURE_TICKET = "Future ticket received";
-    public static final String PERMISSION_TICKET = "Ticket Permission are not enough";
-    public static final String SIGNATURE_TICKET = "Ticket Signature invalid";
-
-
+    //inyeccion por constructor
+    private final TicketMacoValidator macoValidator;
 
     @Inject
-    private TicketMacoValidator macoValidator;
+    public TracingRequestFilter(TicketMacoValidator macoValidator) {
+        this.macoValidator = macoValidator;
+    }
+
     @Override
     public void filter(ContainerRequestContext ctx) throws IOException {
 
@@ -45,23 +50,14 @@ public class TracingRequestFilter implements ContainerRequestFilter {
 
         //validamos si no viene -> 400
         if (macoHeader == null || macoHeader.isBlank()) {
-
-            OperationOutcome operation = OperationOutcomeFactory.fromHttpStatus(
-                    400,
+            abortOutcomeWithResponse(
+                    ctx,
+                    Response.Status.BAD_REQUEST,
                     "Solicitud incorrecta. El ticket debe venir informado",
-                    List.of("http.maco"),
-                    "http.maco"
+                    List.of(HTTP_MACO),
+                    HTTP_MACO
             );
-
-            Response res = Response
-                    .status(Response.Status.BAD_REQUEST)
-                    .entity(operation) //obj
-                    .type(MediaType.APPLICATION_JSON)
-                    .build();
-
-            ctx.abortWith(res);
             return;
-
         }
 
         /*
@@ -71,84 +67,83 @@ public class TracingRequestFilter implements ContainerRequestFilter {
         String error = contentError(macoHeader);
 
         if(error != null){
-             //403 -> EXPIRED_TICKET o PERMISSION_TICKET
-             if (error.equals(EXPIRED_TICKET) || error.equals(PERMISSION_TICKET)){
+             //control de status
+            Response.Status status = FORBIDDEN_ERRORS.contains(error)
+                    ? Response.Status.FORBIDDEN //403
+                    : Response.Status.UNAUTHORIZED; //401
 
-                OperationOutcome operation = OperationOutcomeFactory.fromHttpStatus(
-                        403,
-                        "No autorizado. Token sin permiso o caducado",
-                        List.of("http.maco"),
-                        "http.maco"
-                );
-                Response res = Response
-                        .status(Response.Status.FORBIDDEN)
-                        .entity(operation) //obj
-                        .type(MediaType.APPLICATION_JSON)
-                        .build();
-                ctx.abortWith(res);
-                return;
-             }else {
-                //401 -> MALFORMED_TICKET, SIGNATURE_TICKET, FUTURE_TICKET
-                OperationOutcome operation = OperationOutcomeFactory.fromHttpStatus(
-                        401,
-                        "No autorizado. Token invalido",
-                        List.of("http.maco"),
-                        "http.maco"
-                );
-                Response res = Response.status(Response.Status.UNAUTHORIZED)
-                        .entity(operation) //obj
-                        .type(MediaType.APPLICATION_JSON)
-                        .build();
-                ctx.abortWith(res);
-                return;
-                }
+            //control de diagnostics
+            String diagnostics = (status == Response.Status.FORBIDDEN)
+                    ? "No autorizado. Token sin permiso o caducado"
+                    : "No autorizado. Token invalido";
+
+                 abortOutcomeWithResponse(
+                         ctx,
+                         status,
+                         diagnostics,
+                         List.of(HTTP_MACO),
+                         HTTP_MACO
+                 );
+            return;
         }
+
         /*
         * MACO no contiene error
         * Validamos VERSION error 409
          */
         String versionHeader = ctx.getHeaderString(VERSION_HEADER);
         //rellenamos o capturamos ya que version es opcional en APIDOC
-        String version = (versionHeader == null || versionHeader.isBlank())
+        String versionMaco = (versionHeader == null || versionHeader.isBlank())
                 ? VERSION_SOPORTADA : versionHeader.trim();
 
-        if(!isValidVersionFormat(version)){
-            if(!VERSION_SOPORTADA.equals(version)){
-                OperationOutcome operation = OperationOutcomeFactory.fromHttpStatus(
-                        409,
-                        "La versión del servicio no es soportada: " + version,
-                        List.of("http.version"),
-                        "http.version"
+            if(!VERSION_SOPORTADA.equals(versionMaco)){
+                abortOutcomeWithResponse(
+                        ctx,
+                        Response.Status.CONFLICT,
+                        "La versión del servicio no es soportada: " + versionMaco,
+                        List.of(HTTP_VERSION),
+                        HTTP_VERSION
                 );
-
-                Response res = Response.status(Response.Status.CONFLICT)
-                        .entity(operation)
-                        .type(MediaType.APPLICATION_JSON)
-                        .build();
-
-                ctx.abortWith(res);
             }
-        }
-
-
     }
+    /* ------------ Helpers ------------*/
+
     public String contentError(String firma) {
         String[] parts = firma.split(":");
-        String ticket = parts[0];
-        String signature = parts[1];
 
         if (parts.length != 2) {
-            return MALFORMED_TICKET;
+            return TicketMacoErrorConstants.MALFORMED_TICKET;
         }
-        return macoValidator.validate(ticket, signature);
+        if(parts[0].isBlank() || parts[1].isBlank()){
+            return TicketMacoErrorConstants.MALFORMED_TICKET;
+        }
+        return macoValidator.validate(parts[0],parts[1]);
     }
 
-    private boolean isValidVersionFormat(String version) {
-        if (version == null || version.isBlank()) {
-            return false;
-        }
-        return version.trim().matches("^v\\d\\.\\d$");
+    //Operation+Response+abort
+    private void abortOutcomeWithResponse(
+                              ContainerRequestContext ctx,
+                              Response.Status status,
+                              String diagnostics,
+                              List<String> expressions,
+                              String text){
+
+        OperationOutcome operation = OperationOutcomeFactory.fromHttpStatus(
+                status.getStatusCode(),
+                diagnostics,
+                expressions,
+                text
+        );
+        Response res = Response
+                .status(status)
+                .entity(operation) //obj
+                .type(MediaType.APPLICATION_JSON)
+                .build();
+
+        ctx.abortWith(res);
+
     }
+
 
 
 }
