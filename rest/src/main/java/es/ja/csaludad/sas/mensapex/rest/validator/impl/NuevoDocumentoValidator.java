@@ -15,7 +15,7 @@ public class NuevoDocumentoValidator implements DocumentValidator {
     public String supportsType() {
         return "NuevoDocumento";
     }
-
+    //reglas de validacion
     @Override
     public ValidationResult validate(DocumentPayloadDTO payload) {
         ValidationResult result = ValidationResult.ok();

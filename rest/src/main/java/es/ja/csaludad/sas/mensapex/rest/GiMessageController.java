@@ -20,12 +20,12 @@ import org.hl7.fhir.r4.model.Bundle;
 @Produces(MediaType.APPLICATION_JSON)
 @Tag(name = "Recurso de entidades", description = "Gestión y consulta de entidades de ejemplo")
 public class GiMessageController {
-
+    //SERGIO dependencias
     private final PostGiMessageUseCase postGiMessageUseCase;
     private final BundleToGiMessageMapper bundleToGiMessageMapper;
     private final ValidationService validationService;
     private final BundleToDocumentPayloadDTOMapper bundleToDocumentPayloadDTOMapper;
-
+    //SERGIO inyectamos post y validacion, los Mappers creamos new
     @Inject
     public GiMessageController(PostGiMessageUseCase postGiMessageUseCase, ValidationService validationService) {
         this.postGiMessageUseCase = postGiMessageUseCase;
@@ -42,7 +42,7 @@ public class GiMessageController {
         //Mapear al payload para validar los campos con el factory con patron Strategy
         DocumentPayloadDTO dto = bundleToDocumentPayloadDTOMapper.apply(bundle);
         //Validar mensaje segun el la factory con strategy
-        validationService.validateOrThrow(dto);
+        validationService.validateOrThrow(dto); //capa application
         //Mapear del bundle a GiMessage
         GiMessage mapped = bundleToGiMessageMapper.apply(bundle);
         //Insertar GiMessage
