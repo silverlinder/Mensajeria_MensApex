@@ -29,9 +29,16 @@
         <version.maven-failsafe-plugin>3.2.5</version.maven-failsafe-plugin>
         <version.maven-checkstyle-plugin>3.3.0</version.maven-checkstyle-plugin>
         <version.fhir>8.6.0</version.fhir>
+        <version.mensapex-lib>1.0.0.0</version.mensapex-lib>
     </properties>
     <dependencyManagement>
         <dependencies>
+            <!-- Librería mensapex -->
+            <dependency>
+                <groupId>es.ja.csaludad.sas.mensapex</groupId>
+                <artifactId>componentescomunes-all</artifactId>
+                <version>${version.mensapex-lib}</version>
+            </dependency>
             <!-- Jakarta EE API -->
             <dependency>
                 <groupId>jakarta.platform</groupId>

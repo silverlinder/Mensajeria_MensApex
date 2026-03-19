@@ -1,7 +1,6 @@
 package es.ja.csaludad.sas.mensapex.rest.mapper;
 
 import es.ja.csaludad.sas.mensapex.domain.entity.GiMessage;
-import jakarta.enterprise.context.ApplicationScoped;
 import org.hl7.fhir.r4.model.Bundle;
 
 import java.util.function.Function;
