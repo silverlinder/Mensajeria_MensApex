@@ -100,7 +100,7 @@ public class TracingRequestFilter implements ContainerRequestFilter {
                 abortOutcomeWithResponse(
                         ctx,
                         Response.Status.CONFLICT,
-                        "La versión del servicio no es soportada: " + versionMaco,
+                        "La version del servicio no es soportada: " + versionMaco,
                         List.of(HTTP_VERSION),
                         HTTP_VERSION
                 );
