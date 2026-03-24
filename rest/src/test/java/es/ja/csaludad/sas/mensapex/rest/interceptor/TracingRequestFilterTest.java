@@ -141,7 +141,7 @@ class TracingRequestFilterTest {
                 TracingRequestFilter.HTTP_MACO,
                 TracingRequestFilter.HTTP_MACO);
     }
-    //409 por version no soportada
+    //409 por version no soportada .
     @Test
     @DisplayName("409 cuando la version no esta soportada")
     void shouldAbortWithConflictWhenVersionIsNotSupported() throws Exception {
