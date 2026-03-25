@@ -2,7 +2,7 @@ package es.ja.csaludad.sas.mensapex.rest.exception;
 
 import es.ja.csaludad.sas.mensapex.rest.validator.entity.ValidationResult;
 import jakarta.ws.rs.BadRequestException;
-//tipos que necesita un Exception-> lo usaremos para validar
+//servirá como clase intermedia entre Manejador y ValidationResult
 public class ValidationBadRequestException extends BadRequestException {
 
     private final ValidationResult validationResult;

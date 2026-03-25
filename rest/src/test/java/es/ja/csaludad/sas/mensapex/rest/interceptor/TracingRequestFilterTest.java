@@ -48,8 +48,8 @@ class TracingRequestFilterTest {
         Response response = captureAbortResponse();
         assertResponse(response, 400,
                 "Solicitud incorrecta. El ticket debe venir informado",
-                TracingRequestFilter.HTTP_MACO,
-                TracingRequestFilter.HTTP_MACO);
+                TracingRequestFilter.MACO_EXPRESSION,
+                TracingRequestFilter.MACO_EXPRESSION);
     }
     //400 por maco en blanco
     @Test
@@ -62,8 +62,8 @@ class TracingRequestFilterTest {
         Response response = captureAbortResponse();
         assertResponse(response, 400,
                 "Solicitud incorrecta. El ticket debe venir informado",
-                TracingRequestFilter.HTTP_MACO,
-                TracingRequestFilter.HTTP_MACO);
+                TracingRequestFilter.MACO_EXPRESSION,
+                TracingRequestFilter.MACO_EXPRESSION);
     }
     //401 por ticket malformado sin separador
     @Test
@@ -76,8 +76,8 @@ class TracingRequestFilterTest {
         Response response = captureAbortResponse();
         assertResponse(response, 401,
                 "No autorizado. Token invalido",
-                TracingRequestFilter.HTTP_MACO,
-                TracingRequestFilter.HTTP_MACO);
+                TracingRequestFilter.MACO_EXPRESSION,
+                TracingRequestFilter.MACO_EXPRESSION);
     }
     //401 por parte izquierda vacia
     @Test
@@ -90,8 +90,8 @@ class TracingRequestFilterTest {
         Response response = captureAbortResponse();
         assertResponse(response, 401,
                 "No autorizado. Token invalido",
-                TracingRequestFilter.HTTP_MACO,
-                TracingRequestFilter.HTTP_MACO);
+                TracingRequestFilter.MACO_EXPRESSION,
+                TracingRequestFilter.MACO_EXPRESSION);
     }
     //401 por firma invalida
     @Test
@@ -106,8 +106,8 @@ class TracingRequestFilterTest {
         Response response = captureAbortResponse();
         assertResponse(response, 401,
                 "No autorizado. Token invalido",
-                TracingRequestFilter.HTTP_MACO,
-                TracingRequestFilter.HTTP_MACO);
+                TracingRequestFilter.MACO_EXPRESSION,
+                TracingRequestFilter.MACO_EXPRESSION);
     }
     //403 por ticket caducado
     @Test
@@ -122,8 +122,8 @@ class TracingRequestFilterTest {
         Response response = captureAbortResponse();
         assertResponse(response, 403,
                 "No autorizado. Token sin permiso o caducado",
-                TracingRequestFilter.HTTP_MACO,
-                TracingRequestFilter.HTTP_MACO);
+                TracingRequestFilter.MACO_EXPRESSION,
+                TracingRequestFilter.MACO_EXPRESSION);
     }
     //403 por falta de permisos
     @Test
@@ -138,8 +138,8 @@ class TracingRequestFilterTest {
         Response response = captureAbortResponse();
         assertResponse(response, 403,
                 "No autorizado. Token sin permiso o caducado",
-                TracingRequestFilter.HTTP_MACO,
-                TracingRequestFilter.HTTP_MACO);
+                TracingRequestFilter.MACO_EXPRESSION,
+                TracingRequestFilter.MACO_EXPRESSION);
     }
     //409 por version no soportada .
     @Test
@@ -154,8 +154,8 @@ class TracingRequestFilterTest {
         Response response = captureAbortResponse();
         assertResponse(response, 409,
                 "La version del servicio no es soportada: v2.0",
-                TracingRequestFilter.HTTP_VERSION,
-                TracingRequestFilter.HTTP_VERSION);
+                TracingRequestFilter.VERSION_EXPRESSION,
+                TracingRequestFilter.VERSION_EXPRESSION);
     }
     //caso valido
     @Test
@@ -184,20 +184,20 @@ class TracingRequestFilterTest {
     }
     // metodo contentError ticket con 3 partes
     @Test
-    @DisplayName("contentError devuelve Ticket malformed cuando el formato tiene mas de un separador")
+    @DisplayName("devuelve Ticket malformed cuando el formato tiene mas de un separador")
     void contentErrorShouldReturnMalformedWhenTicketHasMoreThanOneSeparator() {
-        String result = filter.contentError("usuario:parte1:parte2");
+        String result = filter.getMacoValidationError("usuario:parte1:parte2");
 
         assertEquals(TicketMacoErrorConstants.MALFORMED_TICKET, result);
     }
 
     @Test
-    @DisplayName("contentError delega en TicketMacoValidator cuando el ticket tiene formato correcto")
+    @DisplayName(" delega en TicketMacoValidator cuando el ticket tiene formato correcto")
     void contentErrorShouldDelegateToValidatorWhenFormatIsCorrect() {
         when(macoValidator.validate("usuario", "firma"))
                 .thenReturn(TicketMacoErrorConstants.FUTURE_TICKET);
 
-        String result = filter.contentError("usuario:firma");
+        String result = filter.getMacoValidationError("usuario:firma");
 
         assertEquals(TicketMacoErrorConstants.FUTURE_TICKET, result);
         verify(macoValidator).validate(eq("usuario"), eq("firma"));
